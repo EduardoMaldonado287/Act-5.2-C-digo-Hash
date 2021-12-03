@@ -2,8 +2,9 @@
 #include <fstream>
 #include <unordered_map>
 #include <string>
+#include <vector>
+#include "Node.h"
 using namespace std;
-// #include "Node.h"
 // #include "hashMap.h"
 
 string getOnlyIpPart(string ipAndPort)
@@ -15,10 +16,15 @@ string getOnlyIpPart(string ipAndPort)
 
 int main()
 {
+    vector<string> direccionesIp;
     unordered_map<string, string> umap;
-    int counter;
+    int counter = -1, countF, countNF, counterVec = 91910;
     string month, hour, con, ipAndPort, description, currentIpAddressString, day, dominio;
     ifstream logFile("bitacora-5_2.txt");
+
+
+    string ip = "IPADDRESS";
+    string dom = "DOMINIO";
 
     if (logFile.is_open())
     {
@@ -29,41 +35,33 @@ int main()
             getline(logFile, description);
             currentIpAddressString = getOnlyIpPart(ipAndPort);
             
+            dominio = "";
             dominio += month;
             dominio += " ";
             dominio += day;
             dominio += " ";
             dominio += hour;
             dominio += description;
+            direccionesIp.push_back(currentIpAddressString);
 
-            // cout << dominio << endl;
-
-            umap["dominio"] = dominio;
-            umap["ipAddress"] = currentIpAddressString;
-
-            counter++;
-            string key = "ipAddress";
-
-            // if (umap.find(key) != umap.end())
-            // {
-            //     // cout << key << "FOUND" << endl; 
-            //     counter++;
-            //     // cout << counter << endl;
-            // }
-            umap.key_eq
-            umap.at("ipAddress", key)
-     
-            dominio = "";
+            // umap[ip] = currentIpAddressString;
+            // umap[dom] = dominio; 
+            if (umap.find(currentIpAddressString) != umap.end())
+            {
+                countF++;
+            } else {
+                countNF++;
+            }
+            umap.insert(make_pair(currentIpAddressString, dominio));
         }
 
-        // unordered_map<string, string>:: iterator itr;
-        // cout << "\nAll Elements : \n";
-        // for (itr = umap.begin(); itr != umap.end(); itr++)
+        // for (auto itr = umap.begin(); itr != umap.end(); itr++)
         // {
-        //     cout << itr->first << "  " << itr->second << endl;
+        //     cout << "KEY: " << itr->first << " Value: " << itr-> second << endl;
+        //     cout << counter++ << endl;
         // }
-        cout << counter << endl;
-
     }
+    cout << countF << endl;
+    cout << countNF << endl;
     return 0;
 }
