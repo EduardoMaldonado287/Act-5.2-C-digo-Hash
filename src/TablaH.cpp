@@ -1,67 +1,72 @@
 #include <iostream>
+#include <string.h>
+#include <vector>
 #include <fstream>
 #include <unordered_map>
-#include <string>
-#include <vector>
-#include "Node.h"
-using namespace std;
-// #include "hashMap.h"
 
-string getOnlyIpPart(string ipAndPort)
+using namespace std;
+
+string obtenerIP(string ip)
 {
-    int portPosition = ipAndPort.find_first_of(':');
-    string ip = ipAndPort.substr(0, portPosition);
-    return ip;
+  ip = ip.substr(15, 25);
+  int busq = ip.find(" ");
+  if (busq == 0)
+  {
+    ip = ip.substr(1, 25);
+  }
+  busq = ip.find(":");
+  ip = ip.substr(0, busq);
+  return ip;
 }
 
 int main()
 {
-    vector<string> direccionesIp;
-    unordered_map<string, string> umap;
-    int counter = -1, countF, countNF, counterVec = 91910;
-    string month, hour, con, ipAndPort, description, currentIpAddressString, day, dominio;
-    ifstream logFile("bitacora-5_2.txt");
+  string bitacora = "bitacora-5_2.txt";
+  unordered_map<string, string> Datos;
+  unordered_map<string, int> Repeticiones;
 
+  ifstream logFile(bitacora);
 
-    string ip = "IPADDRESS";
-    string dom = "DOMINIO";
-
-    if (logFile.is_open())
+  if (logFile.fail())
+  {
+    cout << "Archivo inexistente" << endl;
+  }
+  else
+  {
+    string dato, ip, anterior, linea;
+    int repeticiones = 0;
+    bool primeraVez = true;
+    while (getline(logFile, dato))
     {
-        getline(logFile, description);
- 
-        while (logFile >> month >> day >> hour >> ipAndPort)
-        {
-            getline(logFile, description);
-            currentIpAddressString = getOnlyIpPart(ipAndPort);
-            
-            dominio = "";
-            dominio += month;
-            dominio += " ";
-            dominio += day;
-            dominio += " ";
-            dominio += hour;
-            dominio += description;
-            direccionesIp.push_back(currentIpAddressString);
-
-            // umap[ip] = currentIpAddressString;
-            // umap[dom] = dominio; 
-            if (umap.find(currentIpAddressString) != umap.end())
-            {
-                countF++;
-            } else {
-                countNF++;
-            }
-            umap.insert(make_pair(currentIpAddressString, dominio));
-        }
-
-        // for (auto itr = umap.begin(); itr != umap.end(); itr++)
-        // {
-        //     cout << "KEY: " << itr->first << " Value: " << itr-> second << endl;
-        //     cout << counter++ << endl;
-        // }
+      ip = obtenerIP(dato);
+      if (primeraVez == false)
+      {
+        anterior = Datos[ip];
+        repeticiones = Repeticiones[ip];
+        repeticiones++;
+        linea = anterior + dato + "\n";
+        Datos[ip] = linea;
+        Repeticiones[ip] = repeticiones;
+      }
+      else
+      {
+        primeraVez = false;
+        repeticiones++;
+        Datos[ip] = dato + "\n";
+        Repeticiones[ip] = repeticiones;
+      }
     }
-    cout << countF << endl;
-    cout << countNF << endl;
-    return 0;
+    logFile.close();
+
+    cout << "-----------Ingrese la direccion IP (sin puertos)-----------" << endl;
+    cin >> ip;
+
+    cout << "-----------Resumen-----------" << endl
+         << Datos[ip] << endl;
+    cout << "-----------Repeticiones-----------" << endl
+         << Repeticiones[ip] << endl;
+  }
+
+  
+  return 0;
 }
